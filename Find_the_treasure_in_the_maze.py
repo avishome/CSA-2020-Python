@@ -73,7 +73,7 @@ class Ma:
     def clacTrease(self):
         '''
         We get the distance diagonally when we are close enough. 
-        We can narrow the search to 4 points on the map.
+        We can narrow the search to 8 points on the map.
         '''
         self.s.send("g".encode())
         res = self.s.recv(1024)
