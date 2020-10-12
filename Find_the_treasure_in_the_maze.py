@@ -1,6 +1,5 @@
 from multiprocessing import Pool
 import socket
-
 global BACK, BLOCK, INTTOLETTR, LETTERTOINT
 BACK = 2
 BLOCK = 0
@@ -18,6 +17,7 @@ class Ma:
         self.s = sock
         self.lastStep = 0
         resp = str(self.s.recv(1024))
+        print(resp)
         self.LookAround()
 
     def UpdatePrev(self):
@@ -46,7 +46,8 @@ class Ma:
         resp = str(self.s.recv(1024))
         while "What " in resp:
             resp = str(self.s.recv(1024))
-        m = resp.replace("/", "").replace("'", "").replace("\\","").replace("n", "").replace(", ", "=").split("=")[1::2]
+        m = resp.replace("/", "").replace("'", "").replace("\\",
+                                                           "").replace("n", "").replace(", ", "=").split("=")[1::2]
         self.prev += [m]
         resp = self.s.recv(1024)
 
@@ -69,13 +70,17 @@ class Ma:
         self.LookAround()
         self.UpdatePrev()
 
-    def clacTrease(self):
+    def clacTrease(self,i):
+        '''
+        We get the distance diagonally when we are close enough. 
+        We can narrow the search to 4 points on the map.
+        '''
         self.s.send("g".encode())
         res = self.s.recv(1024)
         print(self.x, self.y, res)
         self.s.recv(1024)
         if "Your distance from the treasure is" in res.decode():
-            self.setpsCounter = -1
+            self.setpsCounter = -1 # Get distance in the next step as well
             des = int(res.decode().split(" ")[-1][:-1])
             print(self.x, self.y, des)
             res = [(y, i) for y in range(100)
@@ -87,7 +92,7 @@ class Ma:
                 tempSol += [(self.x+disA, self.y-disB)]
                 tempSol += [(self.x-disA, self.y+disB)]
                 tempSol += [(self.x+disA, self.y+disB)]
-                tempSol += [item[::-1] for item in tempSol] # and maybe the tempSolposite
+                tempSol += [item[::-1] for item in tempSol] # and maybe the oposite
                 print(tempSol)
                 if len(self.solutions) == 0:
                     self.solutions += tempSol
@@ -129,7 +134,7 @@ class Ma:
         return (x, y)
 
 
-def privatT(num):
+def Independentgame(num):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((URL_TO_CHELLANGE, 80))
     s.send("hi\n\n".encode())
@@ -154,7 +159,7 @@ def privatT(num):
         pass
     return game
 
-
-pool = Pool(processes=100)              # Start a worker processes.
-with pool:
-    res = pool.map(privatT, list(range(100)))
+if __name__ == "__main__": 
+    pool = Pool(processes=100)              # Start a worker processes.
+    with pool:
+        res = pool.map(Independentgame, list(range(100)))
