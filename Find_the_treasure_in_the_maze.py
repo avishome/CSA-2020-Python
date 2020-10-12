@@ -70,7 +70,7 @@ class Ma:
         self.LookAround()
         self.UpdatePrev()
 
-    def clacTrease(self,i):
+    def clacTrease(self):
         '''
         We get the distance diagonally when we are close enough. 
         We can narrow the search to 4 points on the map.
